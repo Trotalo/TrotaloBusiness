@@ -1,0 +1,16 @@
+name: TrotaloBusiness
+version: 0.0.1
+lowCaseName: trotalobusiness
+namespace: trotalobusiness
+description: 'trotalobusiness componets for modx'
+author: camilo.casadiego@trotalo.com
+menus:
+    -
+        text: trotalobusiness.menu
+        action: manage
+
+
+database:
+    tables:
+        - trotalobusiness\Model\TrQuestions
+        - trotalobusiness\Model\TrAnswers

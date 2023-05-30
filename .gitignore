@@ -1,0 +1,7 @@
+.idea/
+.vscode/
+/www
+/mysql
+/mariadb
+/modxServer/installers/*.zip
+vendor/
