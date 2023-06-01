@@ -44,7 +44,7 @@ class TrAnswers extends \trotalobusiness\Model\TrAnswers
             'content' => 
             array (
                 'dbtype' => 'varchar',
-                'precision' => '1000',
+                'precision' => '8000',
                 'phptype' => 'string',
                 'null' => false,
                 'default' => '',
@@ -52,7 +52,7 @@ class TrAnswers extends \trotalobusiness\Model\TrAnswers
             'ai_content' => 
             array (
                 'dbtype' => 'varchar',
-                'precision' => '1000',
+                'precision' => '8000',
                 'phptype' => 'string',
                 'null' => false,
                 'default' => '',

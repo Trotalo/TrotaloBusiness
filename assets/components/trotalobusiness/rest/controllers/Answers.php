@@ -54,10 +54,12 @@ class TrotaloAnswers extends GPTController {
       if (array_key_exists('error', $AIResponse)){
         //removes the answer if the connetion failed!
         $this->object->remove();
-        throw new Exception('Errors accesing openAI API: ' . $AIResponse['error']['message'], 500);
+        throw new Exception('Errors accessing openAI API: ' . $AIResponse['error']['message'], 500);
       }
       $this->object->set('ai_content', $AIResponse["choices"][0]["message"]["content"]);
       $this->object = $this->object->save();
+    } else {
+      parent::post();
     }
 
 
