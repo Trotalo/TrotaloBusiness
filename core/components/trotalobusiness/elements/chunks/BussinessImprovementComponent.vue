@@ -21,6 +21,9 @@ const answer = ref([""])
 const options = ref({})
 const questionType = ref(0)
 const panel = ref('s0')
+const promoCode = ref('')
+const logged = ref(false)
+const user = ref({})
 
 const wsRoute = inject('wsroute')
 
@@ -62,7 +65,8 @@ onMounted(() => {
     }
     const msg = {
       'question_id': question.value.id,
-      'content': answer.value.join(' - ')
+      'content': answer.value.join(' - '),
+      'user_id': user.value.id
     }
     
     try {
@@ -128,29 +132,54 @@ onMounted(() => {
         $q.loading.hide()
       })
   }
+  
+  async function validateCode(){
+    $q.loading.show({
+      delay: 400 // ms
+    })
+    const response = await axios({
+      method: 'get',
+      url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=EarlyAccessUsr/" + promoCode.value + "?code"
+    }, axiosConfig)
+    console.log(response)
+    if (!response.data.success) {
+      $q.dialog({
+        title: 'Verifica tu codigo!',
+        message: 'El codigo que proporcionaste no fue encontrado, por favor verificalo' 
+      })
+    } else {
+      logged.value = true
+      user.value = response.data.object 
+    }
+    
+    $q.loading.hide()
+  }
 
 </script>
 
-<!--<template>
-  <div class="q-pa-md row items-start q-gutter-md">
-    <q-card class="my-card">
+<template>
+  <div v-if="!logged" class="q-pa-md row items-start q-gutter-md">
+    <q-card
+      class="my-card"
+    >
       <q-card-section>
-        {{ question.question }}
+        <div class="text-h6">Bienvenido a Trotalo</div>
+        <br>
+        <div class="text-subtitle2">La plataforma donde encontraras todo para crecer tu negocio!</div>
       </q-card-section>
-      
-      <q-card-section>
-        <q-input v-model="answer" label="Digita tu respuesta" />
+
+      <q-card-section class="q-pt-none">
+        <div class="text-subtitle2">Ingresa tu codigo de invitacion!</div>
+        <q-input v-model="promoCode" label="Codigo validacion" />
       </q-card-section>
-      
-      <q-card-actions>
-        <q-btn flat @click="storeAnswer()">Continuar</q-btn>
-      </q-card-actions>
+      <div class="q-pa-md">
+        <q-btn color="primary" @click="validateCode()">Validar</q-btn>
+      </div>
     </q-card>
   </div>
-  
-</template>-->
-<template>
-  <div class="q-pa-md row items-start q-gutter-md">
+  <div 
+    v-else 
+    class="q-pa-md row items-start q-gutter-md">
     <q-card class="my-card">
       <q-card-section>
         {{ question.question }}
@@ -226,8 +255,6 @@ onMounted(() => {
         <q-btn-group spread>
           <q-btn color="primary" @click="storeAnswer()">Siguiente</q-btn>
           <q-btn color="secondary" @click="resetForm()" icon="visibility">Volver a empezar</q-btn>  
-          <!--<q-btn color="purple" label="First" icon="timeline" />
-          <q-btn color="purple" label="Second" icon="visibility" />-->
         </q-btn-group>
       </div>
     </q-card>

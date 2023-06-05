@@ -15,3 +15,4 @@ database:
         - trotalobusiness\Model\TrQuestions
         - trotalobusiness\Model\TrAnswers
         - trotalobusiness\Model\TrConversations
+        - trotalobusiness\Model\TrEarlyAccessUsr
