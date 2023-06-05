@@ -23,6 +23,9 @@ if ($modx->services->has('error')) {
 }
 //$modx->getService('error', 'error.modError', '', '');
 
+header('Access-Control-Allow-Origin: https://192.168.0.104:5173');
+header('Access-Control-Allow-Credentials: true');
+
 if ($modx->getRequest()) {
   $modx->request->sanitizeRequest();
 }

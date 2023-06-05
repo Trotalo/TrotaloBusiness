@@ -57,7 +57,12 @@ class TrotaloAnswers extends GPTController {
         throw new Exception('Errors accessing openAI API: ' . $AIResponse['error']['message'], 500);
       }
       $this->object->set('ai_content', $AIResponse["choices"][0]["message"]["content"]);
-      $this->object = $this->object->save();
+      $answerId = $this->object->save();
+      //then we store the conversatin
+      $convDB = $this->modx->newObject('trotalobusiness\Model\TrConversations');
+      $convDB->set('answer_id', $answerId);
+      $convDB->set('conversation', json_encode($conversation));
+      $convDB->save();
     } else {
       parent::post();
     }

@@ -17,7 +17,10 @@ const axiosConfig = {
 
 const questionId = ref(1)
 const question = ref({})
-const answer = ref("")
+const answer = ref([""])
+const options = ref({})
+const questionType = ref(0)
+const panel = ref('s0')
 
 const wsRoute = inject('wsroute')
 
@@ -40,6 +43,9 @@ onMounted(() => {
       }, axiosConfig)
       console.log(response)
       question.value = response.data.object 
+      questionType.value = response.data.object.question_type 
+      options.value = response.data.object.questions ? 
+                        JSON.parse(response.data.object.questions) : {};
     } catch (error) {
       processError(error)
       
@@ -47,9 +53,16 @@ onMounted(() => {
   }
   
   async function storeAnswer(){
+    if (!answer.value || answer.value.length === 0) {
+      $q.dialog({
+        title: 'Contesta las preguntas',
+        message: 'Antes de continuar asegurate de contestar las preguntas'
+      })
+      return;
+    }
     const msg = {
       'question_id': question.value.id,
-      'content': answer.value
+      'content': answer.value.join(' - ')
     }
     
     try {
@@ -62,7 +75,7 @@ onMounted(() => {
         data: msg
       }, axiosConfig)
       console.log(response)
-      answer.value = ""
+      answer.value = [""]
       loadQuestion(question.value.id, true)
       $q.loading.hide()
     } catch (error) {
@@ -98,7 +111,7 @@ onMounted(() => {
 
 </script>
 
-<template>
+<!--<template>
   <div class="q-pa-md row items-start q-gutter-md">
     <q-card class="my-card">
       <q-card-section>
@@ -115,6 +128,85 @@ onMounted(() => {
     </q-card>
   </div>
   
+</template>-->
+<template>
+  <div class="q-pa-md row items-start q-gutter-md">
+    <q-card class="my-card">
+      <q-card-section>
+        {{ question.question }}
+      </q-card-section>
+      <br>
+      <q-card-section v-if="question.questions">
+        <q-input
+          v-if="questionType === 1"
+          v-for="(q, key) in options" :key="key"
+          v-model="answer[key]"
+          :label="q"
+        />
+        
+        <q-btn v-if="questionType === 2"
+            v-for="(q, key) in options" :key="key"
+            v-model="answer[key]"
+            color="primary"
+            class="full-width q-mb-md" 
+            :label="q"
+            @click="answer[0] = q; storeAnswer()"/>
+        
+        <div
+            v-if="questionType === 3"
+            v-for="(option, index) in questionOptions"
+            :key="index"
+          >
+            <q-checkbox
+              v-model="answer[key]"
+              :label="option"
+            />
+        </div>
+        
+        <div v-if="questionType === 4" class="q-pa-md">
+          <div class="q-gutter-y-md">
+            <q-option-group
+              v-model="panel"
+              inline
+              :options="[
+                { label: 'Semana 1', value: 's0' },
+                { label: 'Semana 2', value: 's1' },
+                { label: 'Semana 3', value: 's2' },
+                { label: 'Semana 4', value: 's3' },
+                { label: 'Semana 5', value: 's4' }
+              ]"
+            />
+            <q-tab-panels v-model="panel" animated class="shadow-2 rounded-borders">
+              <q-tab-panel 
+                v-for="(action, key) in options" :key="key"
+                :name="'s' + key">
+                <div class="text-h6">{{action.nombre}}</div>
+                {{action.indicadores}}
+                <div class="text-h6">Para poder alcanzar tus objetivos, esta semana deberias:</div>
+                <q-btn  
+                  v-for="(task, tasKey) in action.actividades" 
+                  :key="tasKey"
+                  color="secondary" 
+                  :label="task" 
+                  class="full-width q-mb-md"/>
+              </q-tab-panel>
+            </q-tab-panels>
+          </div>
+        </div>
+  
+        
+          
+      </q-card-section>
+      
+      <q-card-section v-else>
+        <q-input v-model="answer[0]" label="Digita tu respuesta" />
+      </q-card-section>
+
+      <q-card-actions>
+        <q-btn flat @click="storeAnswer()">Continue</q-btn>
+      </q-card-actions>
+    </q-card>
+  </div>
 </template>
 
 
