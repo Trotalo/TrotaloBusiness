@@ -14,11 +14,10 @@ class GPTController extends modRestController{
     parent::__construct($modx, $request, $config);
     $this->open_ai_key = getenv('OPENAI_API_KEY');
     $this->open_ai = new OpenAi($this->open_ai_key);
-
   }
 
 
-  public function getConversation($questionId): array {
+  public function getConversation($questionId, $userId): array {
     $query = $this->modx->query("
       WITH RECURSIVE category_path (id, question, prompt, parent_id) AS
       (
@@ -34,6 +33,7 @@ class GPTController extends modRestController{
         FROM category_path cat
         left join modx_trotalo_answers answers ON
           cat.id = answers.question_id
+          and answers.user_id = $userId
         order by id;
       ");
     if (is_null($query)) {

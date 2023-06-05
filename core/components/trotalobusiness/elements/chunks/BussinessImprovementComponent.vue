@@ -148,6 +148,10 @@ onMounted(() => {
         message: 'El codigo que proporcionaste no fue encontrado, por favor verificalo' 
       })
     } else {
+      $q.dialog({
+        title: 'Bienvenid@ ' + response.data.object.name,
+        message: 'A continuacion podras jugar con nuestro sistema de apoyo a los pequeños y medianos empresarios!'
+      })
       logged.value = true
       user.value = response.data.object 
     }

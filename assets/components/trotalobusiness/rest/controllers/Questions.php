@@ -63,8 +63,10 @@ class TrotaloQuestions extends GPTController {
     if(!strpos($pk, '?')) {
       //If its a simple query
       if (empty($pk)) {
-        return $this->getList();
+        //return $this->getList();
+        return $this->failure('Cant get all the messsages, oepration nor permited', null, 500);
       }
+      //no we get the question number where the user is
       $object = $this->modx->getObject($this->classKey, ['id' => $pk]);
       if ($object->get('ai_generated') === 1) {
         //We get the AI answer for the parent's question
