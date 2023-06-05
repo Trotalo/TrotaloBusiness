@@ -67,11 +67,14 @@ class TrotaloAnswers extends GPTController {
       parent::post();
     }
 
-
-
-
-
   }
+
+  public function put()
+  {
+    $this->modx->removeCollection($this->classKey, '');
+    $this->success('All answers were deleted');
+  }
+
   public function get()
   {
     $pk = $this->getProperty($this->primaryKeyField);

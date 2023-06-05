@@ -108,6 +108,26 @@ onMounted(() => {
       })  
     }
   }
+  
+  async function resetForm(){
+    $q.dialog({
+        title: 'Estas seguro?',
+        message: 'Esta operacion no se puede reversar, porfavor asegurate de guardar toda la informacion necesaria' 
+      }).onOk(async() => {
+        // console.log('OK')
+        $q.loading.show({
+          delay: 400 // ms
+        })
+        const response = await axios({
+          method: 'put',
+          url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Answers"
+        }, axiosConfig)
+        console.log(response)
+        answer.value = [""]
+        loadQuestion(1)
+        $q.loading.hide()
+      })
+  }
 
 </script>
 
@@ -202,9 +222,14 @@ onMounted(() => {
         <q-input v-model="answer[0]" label="Digita tu respuesta" />
       </q-card-section>
 
-      <q-card-actions>
-        <q-btn flat @click="storeAnswer()">Continue</q-btn>
-      </q-card-actions>
+      <div class="q-pa-md">
+        <q-btn-group spread>
+          <q-btn color="primary" @click="storeAnswer()">Siguiente</q-btn>
+          <q-btn color="secondary" @click="resetForm()" icon="visibility">Volver a empezar</q-btn>  
+          <!--<q-btn color="purple" label="First" icon="timeline" />
+          <q-btn color="purple" label="Second" icon="visibility" />-->
+        </q-btn-group>
+      </div>
     </q-card>
   </div>
 </template>
