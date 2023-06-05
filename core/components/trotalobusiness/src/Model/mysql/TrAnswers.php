@@ -43,16 +43,14 @@ class TrAnswers extends \trotalobusiness\Model\TrAnswers
             ),
             'content' => 
             array (
-                'dbtype' => 'varchar',
-                'precision' => '8000',
+                'dbtype' => 'TEXT',
                 'phptype' => 'string',
                 'null' => false,
                 'default' => '',
             ),
             'ai_content' => 
             array (
-                'dbtype' => 'varchar',
-                'precision' => '8000',
+                'dbtype' => 'TEXT',
                 'phptype' => 'string',
                 'null' => false,
                 'default' => '',

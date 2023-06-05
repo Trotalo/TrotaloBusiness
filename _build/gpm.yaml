@@ -14,3 +14,4 @@ database:
     tables:
         - trotalobusiness\Model\TrQuestions
         - trotalobusiness\Model\TrAnswers
+        - trotalobusiness\Model\TrConversations

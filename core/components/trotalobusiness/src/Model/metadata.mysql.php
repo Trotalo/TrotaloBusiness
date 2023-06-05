@@ -9,6 +9,7 @@ $xpdo_meta_map = array (
         array (
             0 => 'trotalobusiness\\Model\\TrQuestions',
             1 => 'trotalobusiness\\Model\\TrAnswers',
+            2 => 'trotalobusiness\\Model\\TrConversations',
         ),
     ),
 );

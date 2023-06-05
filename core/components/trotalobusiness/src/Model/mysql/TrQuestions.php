@@ -36,16 +36,14 @@ class TrQuestions extends \trotalobusiness\Model\TrQuestions
             ),
             'question' => 
             array (
-                'dbtype' => 'varchar',
-                'precision' => '1000',
+                'dbtype' => 'TEXT',
                 'phptype' => 'string',
                 'null' => false,
                 'default' => '',
             ),
             'prompt' => 
             array (
-                'dbtype' => 'varchar',
-                'precision' => '1000',
+                'dbtype' => 'TEXT',
                 'phptype' => 'string',
                 'null' => false,
                 'default' => '',

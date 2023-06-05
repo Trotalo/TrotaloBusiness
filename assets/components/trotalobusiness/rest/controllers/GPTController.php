@@ -59,6 +59,7 @@ class GPTController extends modRestController{
       } else {
         $message['role'] = 'user';
         $prev_ai_content = $list[$key-1]['ai_content'];
+
       }
       $prompt = $answer['prompt'];
       $chunk = $this->modx->newObject('MODX\Revolution\modChunk', array('name' => $key));
@@ -66,7 +67,17 @@ class GPTController extends modRestController{
       $properties = [ 'curr_content' => $content, 'prev_ai_content' => $prev_ai_content , 'prev_ai_content' =>$prev_ai_content ];
       $output = $chunk->process($properties, $prompt);
       $message['content'] = $output;
+      //finally we che
       $messages[] = $message;
+      $localAiContent = $list[$key]['ai_content'];
+      if ($localAiContent !== null && trim($localAiContent) !== '') {
+        //there's ai content
+        $message = [];
+        $message['role'] = 'assistant';
+        $message['content'] = $localAiContent;
+        $messages[] = $message;
+      }
+
 
     }
     //now with the list completed, we build the message
@@ -77,7 +88,7 @@ class GPTController extends modRestController{
     $chat = $this->open_ai->chat([
       'model' => 'gpt-3.5-turbo',
       'messages' => $messages,
-      'temperature' => 0.6
+      'temperature' => 0.4
     ]);
     return json_decode($chat, true);
 

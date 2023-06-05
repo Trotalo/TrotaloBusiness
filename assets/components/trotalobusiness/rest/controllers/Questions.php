@@ -37,19 +37,23 @@ class TrotaloQuestions extends GPTController {
   }
 
   private function getAiGenerated($object) {
-    $prevAnswer = $this->modx->getObject($this->answersPrefix, ['question_id' => $object->get('parent_id')]);
-    if (is_null($prevAnswer)) {
-      throw new Exception('Needed answer not found, please contact support');
+    if ($object->get('parent_id') === 0) {
+      $object->set('questions', $object->get('options'));
+    } else {
+      $prevAnswer = $this->modx->getObject($this->answersPrefix, ['question_id' => $object->get('parent_id')]);
+      if (is_null($prevAnswer)) {
+        throw new Exception('Needed answer not found, please contact support');
+      }
+      $prompt = $object->get('question');
+      //here we process the question tags and return it
+      $chunk = $this->modx->newObject('MODX\Revolution\modChunk', array('name' => $prevAnswer->get('id')));
+      //$chunk->setCacheable(false);
+      //$properties = [ 'prev_ai_content' => $prevAnswer->get('ai_content')];
+      $output = $chunk->process([], $prompt);
+      $object->set('questions', $prevAnswer->get('ai_content'));
+      //$object->set('json_object', $prevAnswer->get('ai_content'));
     }
-    $prompt = $object->get('question');
-    //here we process the question tags and return it
-    $chunk = $this->modx->newObject('MODX\Revolution\modChunk', array('name' => $prevAnswer->get('id')));
-    $chunk->setCacheable(false);
-    $properties = [ 'prev_ai_content' => $prevAnswer->get('ai_content')];
-    $output = $chunk->process($properties, $prompt);
-    $object->set('question', $output);
     $objectArray = $object->toArray();
-
     return $this->success('', $objectArray);
   }
 
