@@ -57,16 +57,47 @@ class TrotaloQuestions extends GPTController {
     return $this->success('', $objectArray);
   }
 
-  public function get()
+  public function post()
   {
     $pk = $this->getProperty($this->primaryKeyField);
+    $userId = $this->getProperty('userId');
     if(!strpos($pk, '?')) {
       //If its a simple query
       if (empty($pk)) {
         //return $this->getList();
         return $this->failure('Cant get all the messsages, oepration nor permited', null, 500);
       }
-      //no we get the question number where the user is
+      //first we get the question number where the user is
+      $query = $this->modx->query("
+        select * 
+          from modx_trotalo_answers answers
+            where answers.question_id = (
+            select max(question_id) from modx_trotalo_answers where user_id = $userId
+            ); 
+      ");
+      if (is_null($query)) {
+        //throw new Exception("NO global componments");
+        //TODO this was changed du the fact that there cannot be global and no need of error
+        return $this->failure('Cant find user! please login again', null, 550);
+      }
+
+      $list = [];
+      while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+        $list[] = $row;
+      }
+      if(!empty($list)) {
+        $last_question_id = $list[0]["question_id"];
+        //and we need to get the next question
+        //TODO esto esta mal, toca buscar la pregunta hija
+        $last_question = $this->modx->getObject($this->classKey, ['parent_id'=> $last_question_id]);
+        if (is_null($last_question)) {
+          return $this->failure('MIssconfiguration, no next question found', null, 550);
+        }
+        $pk = $last_question->get('id');
+
+      }
+
+      //we
       $object = $this->modx->getObject($this->classKey, ['id' => $pk]);
       if ($object->get('ai_generated') === 1) {
         //We get the AI answer for the parent's question
@@ -79,6 +110,7 @@ class TrotaloQuestions extends GPTController {
     } else {
       //Get the id
       $operation = substr($pk,strpos($pk, '?') + 1);
+      //TODO we ignore the provided PK and look for the
       $pk = substr($pk,0, strpos($pk, '?'));
       if (strcmp(strtolower($operation), 'next') === 0) {
         $object = $this->modx->getObject($this->classKey, ['parent_id' => $pk]);
@@ -105,7 +137,9 @@ class TrotaloQuestions extends GPTController {
       } elseif (strcmp(strtolower($operation), 'all') === 0) {
         $conversation =  parent::getConversation($pk);
         return $this->collection($conversation, count($conversation));
-
+      } elseif (strcmp(strtolower($operation), 'curr_question') === 0) {
+        $conversation =  parent::getConversation($pk);
+        return $this->collection($conversation, count($conversation));
       }
 
 

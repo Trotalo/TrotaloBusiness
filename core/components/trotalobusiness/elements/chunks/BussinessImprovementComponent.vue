@@ -7,13 +7,13 @@ import { useI18n } from 'vue-i18n'
 
 const $q = useQuasar()
 
-const axiosConfig = {
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  }
+const headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Access-Control-Allow-Origin': '*'
 }
+
+const axiosConfig = {headers}
 
 const questionId = ref(1)
 const question = ref({})
@@ -27,23 +27,43 @@ const user = ref({})
 
 const wsRoute = inject('wsroute')
 
-onMounted(() => {
+const data = {
+  userId: 789,
+  // other properties you want to include in the request body
+};
+
+onMounted(async() => {
   let queryString = window.location.search
   let urlParams = new URLSearchParams(queryString)
   if( urlParams.has('question') ){
       questionId.value = urlParams.get('question')
   }
+  if( urlParams.has('code') ){
+      promoCode.value = urlParams.get('code')
+      await validateCode()
+  }
     
   loadQuestion(questionId.value)
 })
 
+  
 
   async function loadQuestion(questionId, next) {
     try {
-      const response = await axios({
+      /*const response = await axios({
         method: 'get',
-        url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Questions/" + questionId + (next? '?next': '')
+        url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Questions/" + questionId + (next? '?next': ''),
+        data: data,
+        headers: headers,
+      })*/
+      const response = await axios({
+        method: 'post',
+        url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Questions/" + questionId + (next? '?next': ''),
+        data: {
+          userId: user.value.id,
+        },
       }, axiosConfig)
+      
       console.log(response)
       question.value = response.data.object 
       questionType.value = response.data.object.question_type 
@@ -88,6 +108,17 @@ onMounted(() => {
     }
   }
   
+  function showNoInputDialog(value) {
+    if (!value || value.length === 0) {
+      $q.dialog({
+        title: 'Completa la informacion',
+        message: 'Antes de continuar asegurate de llenar todos los campos'
+      })
+      return false
+    }
+    return true
+  }
+  
   function processError(error) {
     /*if (error.response?.status === 401) {
         $q.dialog({
@@ -124,7 +155,10 @@ onMounted(() => {
         })
         const response = await axios({
           method: 'put',
-          url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Answers"
+          url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Answers",
+          data: {
+            userId: user.value.id,
+          },
         }, axiosConfig)
         console.log(response)
         answer.value = [""]
@@ -134,6 +168,9 @@ onMounted(() => {
   }
   
   async function validateCode(){
+    if (!showNoInputDialog(promoCode.value)){
+      return
+    }
     $q.loading.show({
       delay: 400 // ms
     })
@@ -167,9 +204,9 @@ onMounted(() => {
       class="my-card"
     >
       <q-card-section>
-        <div class="text-h6">Bienvenido a Trotalo</div>
+        <div class="text-h6">Bienvenido a Trotalo Coach</div>
         <br>
-        <div class="text-subtitle2">La plataforma donde encontraras todo para crecer tu negocio!</div>
+        <div class="text-subtitle2">El entranador que necesitas alcanzar las metas de tu negocio!</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -194,8 +231,15 @@ onMounted(() => {
           v-if="questionType === 1"
           v-for="(q, key) in options" :key="key"
           v-model="answer[key]"
-          :label="q"
-        />
+          label-slot
+          type="textarea"
+        >
+          <template v-slot:label>
+            <div class="row items-center all-pointer-events question">
+              {{q}}
+            </div>
+          </template>
+        </q-input>
         
         <q-btn v-if="questionType === 2"
             v-for="(q, key) in options" :key="key"
@@ -252,13 +296,16 @@ onMounted(() => {
       </q-card-section>
       
       <q-card-section v-else>
-        <q-input v-model="answer[0]" label="Digita tu respuesta" />
+        <q-input 
+          v-model="answer[0]"
+          label="Digita tu respuesta" 
+          type="textarea" />
       </q-card-section>
 
       <div class="q-pa-md">
         <q-btn-group spread>
-          <q-btn color="primary" @click="storeAnswer()">Siguiente</q-btn>
           <q-btn color="secondary" @click="resetForm()" icon="visibility">Volver a empezar</q-btn>  
+          <q-btn color="primary" @click="storeAnswer()">Siguiente</q-btn>
         </q-btn-group>
       </div>
     </q-card>
@@ -267,5 +314,10 @@ onMounted(() => {
 
 
 <style scoped lang="scss">
-
+.question{
+  overflow-wrap: break-word;
+  white-space: normal;
+  padding-bottom: 35px;
+  padding-top: 25px;
+}
 </style>

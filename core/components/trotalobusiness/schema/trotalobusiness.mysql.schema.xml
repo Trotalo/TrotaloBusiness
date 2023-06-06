@@ -29,6 +29,6 @@
         <field key="invitation_code" dbtype="varchar" precision="200" phptype="string" null="false" default="" />
         <field key="name" dbtype="varchar" precision="200" phptype="string" null="false" default="" />
         <field key="phone_number" dbtype="varchar" precision="20" phptype="string" null="false" default="" />
-        <field key="email" dbtype="varchar" precision="20" phptype="string" null="false" default="" />
+        <field key="email" dbtype="varchar" precision="200" phptype="string" null="false" default="" />
     </object>
 </model>

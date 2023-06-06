@@ -73,7 +73,11 @@ class TrotaloAnswers extends GPTController {
 
   public function put()
   {
-    $this->modx->removeCollection($this->classKey, '');
+    $userId = $this->getProperty('userId');
+    if(is_null($userId) || empty($userId)) {
+      return $this->failure('MIssing parameters!', null, 500);
+    }
+    $this->modx->removeCollection($this->classKey, array("`user_id` = {$userId}"));
     $this->success('All answers were deleted');
   }
 
