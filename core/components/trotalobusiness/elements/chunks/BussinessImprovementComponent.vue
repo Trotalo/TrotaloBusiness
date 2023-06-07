@@ -37,13 +37,13 @@ onMounted(async() => {
   let urlParams = new URLSearchParams(queryString)
   if( urlParams.has('question') ){
       questionId.value = urlParams.get('question')
+      loadQuestion(questionId.value)
   }
   if( urlParams.has('code') ){
       promoCode.value = urlParams.get('code')
       await validateCode()
   }
-    
-  loadQuestion(questionId.value)
+
 })
 
   
@@ -76,7 +76,7 @@ onMounted(async() => {
   }
   
   async function storeAnswer(){
-    if (!answer.value || answer.value.length === 0) {
+    if (!answer.value || answer.value.toString().length === 0) {
       $q.dialog({
         title: 'Contesta las preguntas',
         message: 'Antes de continuar asegurate de contestar las preguntas'
@@ -141,6 +141,7 @@ onMounted(async() => {
         title: 'error',
         message: error.response?.data?.message ? error.response.data.message : error 
       })  
+      $q.loading.hide()
     }
   }
   
@@ -191,6 +192,7 @@ onMounted(async() => {
       })
       logged.value = true
       user.value = response.data.object 
+      loadQuestion(questionId.value)
     }
     
     $q.loading.hide()
@@ -206,7 +208,11 @@ onMounted(async() => {
       <q-card-section>
         <div class="text-h6">Bienvenido a Trotalo Coach</div>
         <br>
-        <div class="text-subtitle2">El entranador que necesitas alcanzar las metas de tu negocio!</div>
+        <div class="text-subtitle2">El coach que necesitas para alcanzar los objetivos de tu negocio!</div>
+        <br>
+        <div class="text-subtitle2">Libera todo el poder de tus ideas y has crecer tu negocio con nuestras herramientas de inteligencia artificial</div>
+        <br>
+        <div class="text-subtitle2">Obten asesoria experta, planes concretos, y estrategias personalizasa para lleavr tu negocio al siguiente nivel!</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -319,5 +325,96 @@ onMounted(async() => {
   white-space: normal;
   padding-bottom: 35px;
   padding-top: 25px;
+}
+
+.my-card {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  color: #13435E;
+}
+
+.text-h6 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #13435E;
+}
+
+.text-subtitle2 {
+  font-size: 16px;
+  color: #13435E;
+}
+
+.q-pt-none {
+  padding-top: 0 !important;
+}
+
+.q-pa-md {
+  padding: 20px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.q-gutter-md {
+  margin: -16px;
+}
+
+.question {
+  font-size: 16px;
+  font-weight: bold;
+  color: #219EBC;
+  margin-bottom: 10px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.q-mb-md {
+  margin-bottom: 16px;
+}
+
+.shadow-2 {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rounded-borders {
+  border-radius: 8px;
+}
+
+.text-h6 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #219EBC;
+}
+
+.text-h6,
+.text-subtitle2 {
+  margin-bottom: 10px;
+}
+
+.q-pa-md {
+  padding: 20px;
+}
+
+.q-gutter-y-md > * {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.q-btn {
+  background-color: #FFB703;
+  color: #13435E;
+}
+
+.q-btn:hover {
+  background-color: #F08B27;
 }
 </style>
