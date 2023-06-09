@@ -27,7 +27,7 @@ const user = ref({})
 const plans = ref(false)
 const oneStart = ref(1)
 const plansList = ref([{
-  name: "Basico",
+  name: "Básico",
   stars: 1,
   includes: ["a", "b", "c"]
 },{
@@ -88,7 +88,7 @@ onMounted(async() => {
     if (!answer.value || answer.value.toString().length === 0) {
       $q.dialog({
         title: 'Contesta las preguntas',
-        message: 'Antes de continuar asegurate de contestar las preguntas'
+        message: 'Antes de continuar asegúrate de contestar las preguntas'
       })
       return;
     }
@@ -121,8 +121,8 @@ onMounted(async() => {
   function showNoInputDialog(value) {
     if (!value || value.length === 0) {
       $q.dialog({
-        title: 'Completa la informacion',
-        message: 'Antes de continuar asegurate de llenar todos los campos'
+        title: 'Completa la información',
+        message: 'Antes de continuar asegúrate de llenar todos los campos'
       })
       return false
     }
@@ -158,8 +158,8 @@ onMounted(async() => {
   
   async function resetForm(){
     $q.dialog({
-        title: 'Estas seguro?',
-        message: 'Esta operacion no se puede reversar, porfavor asegurate de guardar toda la informacion necesaria' 
+        title: 'Estás seguro?',
+        message: 'Ésta operación no se puede reversar, por favor asegúrate de guardar toda la información necesaria' 
       }).onOk(async() => {
         // console.log('OK')
         $q.loading.show({
@@ -194,14 +194,14 @@ onMounted(async() => {
     console.log(response)
     if (!response.data.success) {
       $q.dialog({
-        title: 'Verifica tu codigo!',
-        message: 'El codigo que proporcionaste no fue encontrado, por favor verificalo' 
+        title: 'Verifica tu código!',
+        message: 'El código que proporcionaste no fue encontrado, por favor verifícalo' 
       })
       $q.loading.hide()
     } else {
       $q.dialog({
         title: 'Bienvenid@ ' + response.data.object.name,
-        message: 'Tomemonos unos minutos para trabajar en algun reto que tengas en tu trabajo o negocio actualmente'
+        message: 'Tomemonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente'
       })
       logged.value = true
       user.value = response.data.object 
@@ -213,13 +213,13 @@ onMounted(async() => {
   async function viewMore(){
     if (user.value.generated === 0){
       $q.dialog({
-        title: 'Atencion',
+        title: 'Atención',
         message: 'En el modo prueba, solo puedes generar un detalle, adquiere alguno de nuestros paquetes para liberar todo el poder!',
         cancel: true,
       })
     } else {
       $q.dialog({
-        title: 'Atencion',
+        title: 'Atención',
         message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
       })
     }
@@ -235,16 +235,16 @@ onMounted(async() => {
       <q-card-section>
         <div class="text-h6">Bienvenido a Trotalo Coach</div>
         <br>
-        <div class="text-subtitle2">El coach que necesitas para alcanzar los objetivos de tu negocio!</div>
+        <div class="text-subtitle2">El Coach que necesitas para alcanzar los objetivos de tu negocio!</div>
         <br>
-        <div class="text-subtitle2">Libera todo el poder de tus ideas y has crecer tu negocio con nuestras herramientas de inteligencia artificial</div>
+        <div class="text-subtitle2">Libera todo el poder de tus ideas y has crecer tu negocio con nuestras herramientas de Inteligencia Artificial</div>
         <br>
-        <div class="text-subtitle2">Obten asesoria experta, planes concretos, y estrategias personalizasa para lleavr tu negocio al siguiente nivel!</div>
+        <div class="text-subtitle2">Obten asesoría experta, planes concretos, y estrategias personalizasa para lleavr tu negocio al siguiente nivel!</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <div class="text-subtitle2">Ingresa tu codigo de invitacion!</div>
-        <q-input v-model="promoCode" label="Codigo validacion" />
+        <div class="text-subtitle2">Ingresa tu código de invitación!</div>
+        <q-input v-model="promoCode" label="Código validación" />
       </q-card-section>
       <div class="q-pa-md">
         <q-btn color="primary" @click="validateCode()">Validar</q-btn>
@@ -311,7 +311,7 @@ onMounted(async() => {
                 :name="'s' + key">
                 <div class="text-h6">{{action.nombre}}</div>
                 {{action.indicadores}}
-                <div class="text-h6">Para poder alcanzar tus objetivos, esta semana deberias:</div>
+                <div class="text-h6">Para poder alcanzar tus objetivos, ésta semana deberías:</div>
                 <q-btn  
                   v-for="(task, tasKey) in action.actividades" 
                   :key="tasKey"
@@ -351,7 +351,7 @@ onMounted(async() => {
         </q-toolbar>
         <q-card-section>
           <div class="text-center">
-            <q-btn color="secondary" @click="viewMore" label="Ver mas detalles!" />
+            <q-btn color="secondary" @click="viewMore" label="Ver más detalles!" />
           </div>
           
           <div class="text-h6 text-center">o</div>
