@@ -20,6 +20,7 @@ class TrEarlyAccessUsr extends \trotalobusiness\Model\TrEarlyAccessUsr
             'name' => '',
             'phone_number' => '',
             'email' => '',
+            'generated' => 0,
         ),
         'fieldMeta' => 
         array (
@@ -50,10 +51,18 @@ class TrEarlyAccessUsr extends \trotalobusiness\Model\TrEarlyAccessUsr
             'email' => 
             array (
                 'dbtype' => 'varchar',
-                'precision' => '20',
+                'precision' => '400',
                 'phptype' => 'string',
                 'null' => false,
                 'default' => '',
+            ),
+            'generated' => 
+            array (
+                'dbtype' => 'int',
+                'precision' => '1',
+                'attributes' => 'unsigned',
+                'phptype' => 'integer',
+                'default' => 0,
             ),
         ),
     );

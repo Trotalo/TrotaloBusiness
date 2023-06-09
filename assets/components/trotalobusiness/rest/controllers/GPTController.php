@@ -42,7 +42,7 @@ class GPTController extends modRestController{
       return '';
     }
 
-    $list = [];
+        $list = [];
     while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
       $list[] = $row;
     }
@@ -88,7 +88,7 @@ class GPTController extends modRestController{
     $chat = $this->open_ai->chat([
       'model' => 'gpt-3.5-turbo',
       'messages' => $messages,
-      'temperature' => 0.4
+      'temperature' => 0.5
     ]);
     return json_decode($chat, true);
 

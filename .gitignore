@@ -5,3 +5,6 @@
 /mariadb
 /modxServer/installers/*.zip
 vendor/
+/_packages/
+/_build/gpm_resolvers/
+/_build/gpm_scripts/

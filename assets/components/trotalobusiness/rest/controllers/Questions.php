@@ -36,11 +36,12 @@ class TrotaloQuestions extends GPTController {
     $this->modxPrefix = $isMODX3 ? 'MODX\Revolution\\' : '';
   }
 
-  private function getAiGenerated($object) {
+  private function getAiGenerated($object, $userId) {
     if ($object->get('parent_id') === 0) {
       $object->set('questions', $object->get('options'));
     } else {
-      $prevAnswer = $this->modx->getObject($this->answersPrefix, ['question_id' => $object->get('parent_id')]);
+      $prevAnswer = $this->modx->getObject($this->answersPrefix, ['question_id' => $object->get('parent_id'),
+                                                                  'user_id' => $userId]);
       if (is_null($prevAnswer)) {
         throw new Exception('Needed answer not found, please contact support');
       }
@@ -88,7 +89,6 @@ class TrotaloQuestions extends GPTController {
       if(!empty($list)) {
         $last_question_id = $list[0]["question_id"];
         //and we need to get the next question
-        //TODO esto esta mal, toca buscar la pregunta hija
         $last_question = $this->modx->getObject($this->classKey, ['parent_id'=> $last_question_id]);
         if (is_null($last_question)) {
           return $this->failure('MIssconfiguration, no next question found', null, 550);
@@ -101,7 +101,7 @@ class TrotaloQuestions extends GPTController {
       $object = $this->modx->getObject($this->classKey, ['id' => $pk]);
       if ($object->get('ai_generated') === 1) {
         //We get the AI answer for the parent's question
-        return $this->getAiGenerated($object);
+        return $this->getAiGenerated($object, $userId);
 
       } else {
         return $this->read($pk);
@@ -121,7 +121,7 @@ class TrotaloQuestions extends GPTController {
         }
         if ($object->get('ai_generated') === 1) {
           //We get the AI answer for the parent's question
-          return $this->getAiGenerated($object);
+          return $this->getAiGenerated($object, $userId);
 
         } else {
           $objectArray = $object->toArray();

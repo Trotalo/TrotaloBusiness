@@ -24,6 +24,21 @@ const panel = ref('s0')
 const promoCode = ref('')
 const logged = ref(false)
 const user = ref({})
+const plans = ref(false)
+const oneStart = ref(1)
+const plansList = ref([{
+  name: "Basico",
+  stars: 1,
+  includes: ["a", "b", "c"]
+},{
+  name: "Avanzado",
+  stars: 2,
+  includes: ["a", "b", "c"]
+},{
+  name: "Experto",
+  stars: 3,
+  includes: ["a", "b", "c"]
+}])
 
 const wsRoute = inject('wsroute')
 
@@ -50,12 +65,6 @@ onMounted(async() => {
 
   async function loadQuestion(questionId, next) {
     try {
-      /*const response = await axios({
-        method: 'get',
-        url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Questions/" + questionId + (next? '?next': ''),
-        data: data,
-        headers: headers,
-      })*/
       const response = await axios({
         method: 'post',
         url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Questions/" + questionId + (next? '?next': ''),
@@ -69,9 +78,9 @@ onMounted(async() => {
       questionType.value = response.data.object.question_type 
       options.value = response.data.object.questions ? 
                         JSON.parse(response.data.object.questions) : {};
+                        return;
     } catch (error) {
       processError(error)
-      
     }
   }
   
@@ -91,6 +100,7 @@ onMounted(async() => {
     
     try {
       $q.loading.show({
+        message: 'Procesando...en preguntas complejas, el sistema se puede tomar hasta un minuto en contestar',
         delay: 400 // ms
       })
       const response = await axios({
@@ -100,7 +110,7 @@ onMounted(async() => {
       }, axiosConfig)
       console.log(response)
       answer.value = [""]
-      loadQuestion(question.value.id, true)
+      await loadQuestion(question.value.id, true)
       $q.loading.hide()
     } catch (error) {
       processError(error)
@@ -143,6 +153,7 @@ onMounted(async() => {
       })  
       $q.loading.hide()
     }
+    throw new Error(error)
   }
   
   async function resetForm(){
@@ -173,6 +184,7 @@ onMounted(async() => {
       return
     }
     $q.loading.show({
+      message: 'Procesando...en preguntas complejas, el sistema se puede tomar hasta un minuto en contestar',
       delay: 400 // ms
     })
     const response = await axios({
@@ -185,19 +197,34 @@ onMounted(async() => {
         title: 'Verifica tu codigo!',
         message: 'El codigo que proporcionaste no fue encontrado, por favor verificalo' 
       })
+      $q.loading.hide()
     } else {
       $q.dialog({
         title: 'Bienvenid@ ' + response.data.object.name,
-        message: 'A continuacion podras jugar con nuestro sistema de apoyo a los pequeños y medianos empresarios!'
+        message: 'Tomemonos unos minutos para trabajar en algun reto que tengas en tu trabajo o negocio actualmente'
       })
       logged.value = true
       user.value = response.data.object 
-      loadQuestion(questionId.value)
+      await loadQuestion(questionId.value)
+      $q.loading.hide()
     }
-    
-    $q.loading.hide()
   }
-
+  
+  async function viewMore(){
+    if (user.value.generated === 0){
+      $q.dialog({
+        title: 'Atencion',
+        message: 'En el modo prueba, solo puedes generar un detalle, adquiere alguno de nuestros paquetes para liberar todo el poder!',
+        cancel: true,
+      })
+    } else {
+      $q.dialog({
+        title: 'Atencion',
+        message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
+      })
+    }
+  }
+  
 </script>
 
 <template>
@@ -275,8 +302,7 @@ onMounted(async() => {
                 { label: 'Semana 1', value: 's0' },
                 { label: 'Semana 2', value: 's1' },
                 { label: 'Semana 3', value: 's2' },
-                { label: 'Semana 4', value: 's3' },
-                { label: 'Semana 5', value: 's4' }
+                { label: 'Semana 4', value: 's3' }
               ]"
             />
             <q-tab-panels v-model="panel" animated class="shadow-2 rounded-borders">
@@ -291,14 +317,12 @@ onMounted(async() => {
                   :key="tasKey"
                   color="secondary" 
                   :label="task" 
-                  class="full-width q-mb-md"/>
+                  class="full-width q-mb-md"
+                  @click="plans = true"/>
               </q-tab-panel>
             </q-tab-panels>
           </div>
         </div>
-  
-        
-          
       </q-card-section>
       
       <q-card-section v-else>
@@ -315,6 +339,61 @@ onMounted(async() => {
         </q-btn-group>
       </div>
     </q-card>
+    
+    <q-dialog v-model="plans" persistent full-width transition-show="flip-down" transition-hide="flip-up">
+      <q-card>
+        <q-toolbar>
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg">
+          </q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Trotalo</span> Coach</q-toolbar-title>
+          <q-btn color="secondary" round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section>
+          <div class="text-center">
+            <q-btn color="secondary" @click="viewMore" label="Ver mas detalles!" />
+          </div>
+          
+          <div class="text-h6 text-center">o</div>
+          
+          <div class="text-h6 text-center">Selecciona uno de nuestros planes para desbloquear todo el poder!</div>
+        </q-card-section>
+        
+        <div class="row">
+          <div class="col" v-for="(plan, key) in plansList" :key="key">
+            <q-card class="my-card">
+              <q-img src="https://cdn.quasar.dev/img/chicken-salad.jpg" />
+              <q-card-section class="text-center">
+                <div class="row no-wrap items-center">
+                  <div class="col text-h6 ellipsis">
+                    {{plan.name}}
+                  </div>
+                </div>
+      
+                <q-rating v-model="plan.stars" :max="plan.stars" size="32px" />
+              </q-card-section>
+      
+              <q-card-section class="q-pt-none">
+                <div class="text-subtitle1">
+                  Incluye
+                </div>
+                <div class="text-caption text-grey">
+                  <ul>
+            				<li v-for="(include, key) in plan.includes" :key="key">{{include}}</li>
+            			</ul>
+                </div>
+              </q-card-section>
+      
+              <q-separator />
+      
+              <q-card-actions align="center">
+                <q-btn color="primary" label="Solicitar!" />
+              </q-card-actions>
+            </q-card>
+          </div>
+        </div>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
