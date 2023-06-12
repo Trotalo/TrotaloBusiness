@@ -65,6 +65,12 @@ class TrotaloAnswers extends GPTController {
       $convDB->set('conversation', json_encode($conversation));
       $convDB->set('user_id', $userId);
       $convDB->save();
+
+      $objectArray = $this->object->toArray();
+      $this->afterPost($objectArray);
+
+      return $this->success('', $objectArray);
+
     } else {
       parent::post();
     }

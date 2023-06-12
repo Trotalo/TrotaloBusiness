@@ -70,11 +70,13 @@ class TrotaloQuestions extends GPTController {
       }
       //first we get the question number where the user is
       $query = $this->modx->query("
-        select * 
-          from modx_trotalo_answers answers
-            where answers.question_id = (
-            select max(question_id) from modx_trotalo_answers where user_id = $userId
-            ); 
+        SELECT *
+        FROM modx_trotalo_answers AS answers
+        JOIN modx_trotalo_questions AS questions ON answers.question_id = questions.id
+        WHERE answers.user_id = $userId
+        AND questions.question_type <> 4
+        ORDER BY answers.timestamp DESC
+        LIMIT 1;      
       ");
       if (is_null($query)) {
         //throw new Exception("NO global componments");

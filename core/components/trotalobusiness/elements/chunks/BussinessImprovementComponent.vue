@@ -15,9 +15,13 @@ const headers = {
 
 const axiosConfig = {headers}
 
+const wsRoute = inject('wsroute')
+const assetsRoute = inject('assetsRoute')
+
 const questionId = ref(1)
 const question = ref({})
 const answer = ref([""])
+const finalAnswer = ref("")
 const options = ref({})
 const questionType = ref(0)
 const panel = ref('s0')
@@ -26,21 +30,24 @@ const logged = ref(false)
 const user = ref({})
 const plans = ref(false)
 const oneStart = ref(1)
+const showFinal = ref(false)
 const plansList = ref([{
   name: "Básico",
   stars: 1,
+  image: assetsRoute + 'images/basic.png',
   includes: ["a", "b", "c"]
 },{
   name: "Avanzado",
   stars: 2,
+  image: assetsRoute + 'images/mid.png',
   includes: ["a", "b", "c"]
 },{
   name: "Experto",
   stars: 3,
+  image: assetsRoute + 'images/expert.png',
   includes: ["a", "b", "c"]
 }])
 
-const wsRoute = inject('wsroute')
 
 const data = {
   userId: 789,
@@ -63,28 +70,36 @@ onMounted(async() => {
 
   
 
-  async function loadQuestion(questionId, next) {
+  async function loadQuestion(inputQuestionId, next) {
     try {
       const response = await axios({
-        method: 'post',
-        url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Questions/" + questionId + (next? '?next': ''),
-        data: {
-          userId: user.value.id,
-        },
+      method: 'post',
+      url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=Questions/" + inputQuestionId + (next? '?next': ''),
+      data: {
+        userId: user.value.id,
+      },
       }, axiosConfig)
       
       console.log(response)
       question.value = response.data.object 
       questionType.value = response.data.object.question_type 
-      options.value = response.data.object.questions ? 
+      questionId.value = question.value.id
+      try {
+        options.value = response.data.object.questions ? 
                         JSON.parse(response.data.object.questions) : {};
-                        return;
+                        return response.data.object.questions;
+      } catch (e) {
+          finalAnswer.value = response.data.object.questions
+          //TODO reenable when the db is updated
+          //processError(e)
+      }  
+      
     } catch (error) {
       processError(error)
     }
   }
   
-  async function storeAnswer(){
+  async function storeAnswer(closeWait){
     if (!answer.value || answer.value.toString().length === 0) {
       $q.dialog({
         title: 'Contesta las preguntas',
@@ -110,8 +125,10 @@ onMounted(async() => {
       }, axiosConfig)
       console.log(response)
       answer.value = [""]
-      await loadQuestion(question.value.id, true)
-      $q.loading.hide()
+      if (closeWait) {
+        $q.loading.hide()
+      }
+      return response
     } catch (error) {
       processError(error)
       
@@ -174,10 +191,26 @@ onMounted(async() => {
         }, axiosConfig)
         console.log(response)
         answer.value = [""]
+        finalAnswer.value = ""
         loadQuestion(1)
         $q.loading.hide()
       })
   }
+  
+  async function saveUserAttemp(){
+    try {
+      user.value.generated = 1
+      const response = await axios({
+      method: 'put',
+      url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=EarlyAccessUsr/" + user.value.id,
+      data: user.value,
+      }, axiosConfig)
+    } catch (error) {
+      processError(error)
+    }
+  }
+    
+  
   
   async function validateCode(){
     if (!showNoInputDialog(promoCode.value)){
@@ -210,19 +243,43 @@ onMounted(async() => {
     }
   }
   
-  async function viewMore(){
+  async function viewMore(answer, $event){
     if (user.value.generated === 0){
       $q.dialog({
         title: 'Atención',
         message: 'En el modo prueba, solo puedes generar un detalle, adquiere alguno de nuestros paquetes para liberar todo el poder!',
         cancel: true,
+      }).onOk(async() => {
+        user.value.generated = 1
+        const returnValue = await storeAnswer();
+        finalAnswer.value = returnValue.data.object.ai_content
+        await saveUserAttemp();
+        showFinal.value = true
+        //await loadQuestion(question.value.id, true)
+        $q.loading.hide()
+      }).onOk(() => {
+        // console.log('>>>> second OK catcher')
       })
+      //storeAnswer()
     } else {
-      $q.dialog({
+      if (finalAnswer.value.length > 0) {
+        showFinal.value = true
+      } else {
+        $q.dialog({
         title: 'Atención',
         message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
-      })
+      })  
+      }
+      
     }
+  }
+  
+  async function saveAndContinue(){
+    await storeAnswer()
+    await loadQuestion(questionId.value, true)
+    $q.loading.hide()
+    return;
+    
   }
   
 </script>
@@ -280,7 +337,7 @@ onMounted(async() => {
             color="primary"
             class="full-width q-mb-md" 
             :label="q"
-            @click="answer[0] = q; storeAnswer()"/>
+            @click="answer[0] = q; saveAndContinue()"/>
         
         <div
             v-if="questionType === 3"
@@ -318,7 +375,7 @@ onMounted(async() => {
                   color="secondary" 
                   :label="task" 
                   class="full-width q-mb-md"
-                  @click="plans = true"/>
+                  @click="answer[0] = task;plans = true"/>
               </q-tab-panel>
             </q-tab-panels>
           </div>
@@ -335,10 +392,12 @@ onMounted(async() => {
       <div class="q-pa-md">
         <q-btn-group spread>
           <q-btn color="secondary" @click="resetForm()" icon="visibility">Volver a empezar</q-btn>  
-          <q-btn color="primary" @click="storeAnswer()">Siguiente</q-btn>
+          <q-btn color="primary" @click="saveAndContinue()">Siguiente</q-btn>
         </q-btn-group>
       </div>
     </q-card>
+    
+    
     
     <q-dialog v-model="plans" persistent full-width transition-show="flip-down" transition-hide="flip-up">
       <q-card>
@@ -362,11 +421,11 @@ onMounted(async() => {
         <div class="row">
           <div class="col" v-for="(plan, key) in plansList" :key="key">
             <q-card class="my-card">
-              <q-img src="https://cdn.quasar.dev/img/chicken-salad.jpg" />
+              <q-img :src="plan.image" />
               <q-card-section class="text-center">
                 <div class="row no-wrap items-center">
                   <div class="col text-h6 ellipsis">
-                    {{plan.name}}
+                    {{plan.name}} sdf
                   </div>
                 </div>
       
@@ -394,11 +453,38 @@ onMounted(async() => {
         </div>
       </q-card>
     </q-dialog>
+    
+     <q-dialog v-model="showFinal" persistent full-width transition-show="flip-down" transition-hide="flip-up">
+      <q-card>
+        <q-toolbar>
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg">
+          </q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Trotalo</span> Coach</q-toolbar-title>
+          <q-btn color="secondary" round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section>
+          <!--<div class="text-center">
+            <q-btn color="secondary" @click="viewMore" label="Ver más detalles!" />
+          </div>-->
+          
+          <div class="text-h2 text-center">Tu plan!</div>
+          <div class="q-mt-md q-mb-md text-h5 text-center">Para ver los planes detallados de todas tus actividades, y acceder a muchas mas herramientas, selecciona un plan de subscripcion!</div>
+          
+          <p class="final-answer">{{finalAnswer}}</p>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    
   </div>
 </template>
 
 
 <style scoped lang="scss">
+.final-answer{
+  white-space: pre-wrap;
+}
+
 .question{
   overflow-wrap: break-word;
   white-space: normal;
