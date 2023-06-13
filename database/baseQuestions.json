@@ -42,7 +42,7 @@
 	{
 		"id" : 6,
 		"parent_id" : 4,
-		"question" : "Por favor revisa las estrategias sugeridas, y escoje una para que veamos una plan de acción!",
+		"question" : "Por favor revisa las estrategias sugeridas, y escoje una para que veamos una plan de acción",
 		"prompt" : "De las estrategias que me sugeriste vamos a implementar [[+curr_content]]. Ahora necesito que crees un plan semanal para un mes de trabajo, cada plan semanal debe tener un titulo y un párrafo corto donde se describa un OKR para la semana, los planes pueden ser campañas de redes sociales, cambio de imagen, marketing de redes sociales, diseño de producto entre otros. Dentro de cada plan, debes generar un arreglo con cinco actividades a realizar durante cada una de las semanas, debes asegurarte que las actividades no sean repetitivas, y generen valor ofreciendo acciones concretas que ayuden a cumplir las metas.\nPara generar tu respuesta, ten en cuenta todos los elementos de esta conversacion, y busca que tu plan este enfocado en tomar accion, y medir resultados, por ejemplo si se esta diseñando un producto, se debe enfocar la respuesta en llegar a hacer pruebas con el usuario, o si se esta en un plan de marketing, se deben dar pasos concretos en aras de generar ventas. En la respuesta no debes poner saltos de linea como \n, \r, u otros carcateres adicionales, la estructura debe ser como la del json mencionado al inicio de este mensaje, en una sola cadena de caracteres continua que sera leida por javascript\n  La siguiente plantilla JSON es la que debes usar para generar cada uno de los planes de la respuesta\n  [{     nombre: ', //NOmbre de la meta de la semana     \n  \tindicadores: ', //Elementos importantes como nuevas ventas, o pruebas con usuarios, o cualquier elemento significativo     \n  \tactividades: [] // Arreglo de 5 elementos de actividades que la persona deberia realizar diariamente, como hacer posts de redes entre otros\n   },  ] \n Este es un ejemplo de como debes generar la informacion, se explica cada campo, aca solo se muestra un objeto en el arreglo pero debes generar 4 planes completos, uno por cada semana del mes\n",
 		"options" : "",
 		"ai_generated" : 1,
@@ -52,7 +52,7 @@
 	{
 		"id" : 7,
 		"parent_id" : 6,
-		"question" : "Éste es el plan que creemos que te puede dar grandes resultandos en el siguiente mes!",
+		"question" : "¡Éste es el plan que creemos que te puede dar grandes resultandos en el siguiente mes!",
 		"prompt" : "Basados en la siguiente actividad: [[+curr_content]], y teniendo en cuenta toda la información que tienes de esta conversacion, quiero que generes un parrafo de maximo 300 caracteres donde me expliques de forma mas amplia la actividad, y como llevarla a cabo, debes evitar ser repetitivo con las frases de tal forma que me logres dar la mayor cantidad de informacion de valor, Luego del parrafo, quiero que me des un ejemplo concreto en forma de lista de 5 elementos, de como se veria la actividad una vez realizada, por ejemplo si estamos hablando de hacer un estudio de mercado, deberia listar que resultados deberiamos obtener, y si por el contrario la actividad tiene alguna relacion con generacion de contenido, dar ejemplos de contenido basados en toda esta conversacion, en esta pregunta debes ser muy creativo y dar informacion interesante que me sirga de guia para hacer la actividad de la mejor forma posible",
 		"options" : "",
 		"ai_generated" : 1,
