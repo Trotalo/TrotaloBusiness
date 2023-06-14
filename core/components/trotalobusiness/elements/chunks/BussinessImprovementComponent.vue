@@ -175,7 +175,7 @@ onMounted(async() => {
   
   async function resetForm(){
     $q.dialog({
-        title: 'Estás seguro?',
+        title: '¿Estás seguro?',
         message: 'Ésta operación no se puede reversar, por favor asegúrate de guardar toda la información necesaria' 
       }).onOk(async() => {
         // console.log('OK')
@@ -267,7 +267,7 @@ onMounted(async() => {
       } else {
         $q.dialog({
         title: 'Atención',
-        message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
+        message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan'
       })  
       }
       
