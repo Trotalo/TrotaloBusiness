@@ -176,7 +176,7 @@ onMounted(async() => {
   
   async function resetForm(){
     $q.dialog({
-        title: 'Estás seguro?',
+        title: '¿Estás seguro?',
         message: 'Ésta operación no se puede reversar, por favor asegúrate de guardar toda la información necesaria' 
       }).onOk(async() => {
         // console.log('OK')
@@ -235,7 +235,7 @@ onMounted(async() => {
     } else {
       $q.dialog({
         title: 'Bienvenid@ ' + response.data.object.name,
-        message: 'Tomemonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente'
+        message: 'Tomémonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente'
       })
       logged.value = true
       user.value = response.data.object 
@@ -270,6 +270,7 @@ onMounted(async() => {
           title: 'Atención',
           message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
         })  
+
       }
       
     }
