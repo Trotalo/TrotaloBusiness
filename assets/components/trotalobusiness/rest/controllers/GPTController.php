@@ -97,7 +97,7 @@ class GPTController extends modRestController{
             'parameters' => [
               'type' => 'object',
               'properties' => [
-                'questions'=> [
+                'elements'=> [
                   'type' => 'array',
                   'items' => [
                     'type' => 'string',

@@ -36,17 +36,14 @@ const plansList = ref([{
   name: "Básico",
   stars: 1,
   image: assetsRoute + 'images/basic.jpg',
+  description: "Tu asesor personal para construir estrategias y tareas que puedes aplicar para mejorar tus ventas, plan comercial, o cualquier reto que tengas en este momento.",
   includes: ["5 herramientas como las que acabas de probar para hacer crecer tu negocio"]
 },{
-  name: "Avanzado",
+  name: "Extras",
   stars: 2,
   image: assetsRoute + 'images/mid.jpg',
+  description: "Ve al siguiente nivel con nuestros extras, desde generación de imágenes, asesoría personalizada, hasta profundizar en las estrategias que te interesen y mucho más",
   includes: ["2 herramientas personalizadas de acuerdo a tus necesidades", "acceso a informacion actualizaada", "100MB para cargar tus archivos"]
-},{
-  name: "Experto",
-  stars: 3,
-  image: assetsRoute + 'images/expert.jpg',
-  includes: ["Tu asistenete de negocio completamente ilimintado"]
 }])
 
 
@@ -106,7 +103,7 @@ onMounted(async() => {
         title: 'Contesta las preguntas',
         message: 'Antes de continuar asegúrate de contestar las preguntas'
       })
-      return;
+      return false;
     }
     const msg = {
       'question_id': question.value.id,
@@ -132,8 +129,9 @@ onMounted(async() => {
       return response
     } catch (error) {
       processError(error)
-      
     }
+    
+    return true;
   }
   
   function showNoInputDialog(value) {
@@ -176,7 +174,7 @@ onMounted(async() => {
   
   async function resetForm(){
     $q.dialog({
-        title: '¿Estás seguro?',
+        title: 'Estás seguro?',
         message: 'Ésta operación no se puede reversar, por favor asegúrate de guardar toda la información necesaria' 
       }).onOk(async() => {
         // console.log('OK')
@@ -235,7 +233,7 @@ onMounted(async() => {
     } else {
       $q.dialog({
         title: 'Bienvenid@ ' + response.data.object.name,
-        message: 'Tomémonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente'
+        message: 'Tomemonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente'
       })
       logged.value = true
       user.value = response.data.object 
@@ -270,17 +268,17 @@ onMounted(async() => {
           title: 'Atención',
           message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
         })  
-
       }
       
     }
   }
   
   async function saveAndContinue(){
-    await storeAnswer()
-    await loadQuestion(questionId.value, true)
+    if (await storeAnswer()) {
+      await loadQuestion(questionId.value, true)  
+    }
     $q.loading.hide()
-    return;
+    return
   }
   
   function askForPlan(){
@@ -362,7 +360,7 @@ onMounted(async() => {
       <q-card-section v-if="question.questions">
         <q-input
           v-if="questionType === 1"
-          v-for="(q, key) in options.questions" :key="key"
+          v-for="(q, key) in options.elements" :key="key"
           v-model="answer[key]"
           label-slot
           type="textarea"
@@ -375,7 +373,7 @@ onMounted(async() => {
         </q-input>
         
         <q-btn v-if="questionType === 2"
-            v-for="(q, key) in options.questions" :key="key"
+            v-for="(q, key) in options.elements" :key="key"
             v-model="answer[key]"
             color="primary"
             class="full-width q-mb-md" 
@@ -475,28 +473,28 @@ onMounted(async() => {
         </q-card-section>
         
         <div class="row">
-          <div class="col-xs-12 col-md-4" v-for="(plan, key) in plansList" :key="key">
+          <div class="col-xs-12 col-md-6" v-for="(plan, key) in plansList" :key="key">
             <q-card class="my-card">
               <q-img :src="plan.image" />
               <q-card-section class="text-center">
                 <div class="row no-wrap items-center">
                   <div class="col text-h6 ellipsis">
-                    {{plan.name}} sdf
+                    {{plan.name}}
                   </div>
                 </div>
       
-                <q-rating v-model="plan.stars" :max="plan.stars" size="32px" />
+                <!--<q-rating v-model="plan.stars" :max="plan.stars" size="32px" />-->
               </q-card-section>
       
               <q-card-section class="q-pt-none">
                 <div class="text-subtitle1">
-                  Incluye
+                  {{plan.description}}
                 </div>
-                <div class="text-caption text-grey">
+                <!--<div class="text-caption text-grey">
                   <ul>
             				<li v-for="(include, key) in plan.includes" :key="key">{{include}}</li>
             			</ul>
-                </div>
+                </div>-->
               </q-card-section>
       
               <q-separator />

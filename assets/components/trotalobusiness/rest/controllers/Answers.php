@@ -104,5 +104,4 @@ class TrotaloAnswers extends GPTController {
     return $this->read($pk);
   }
 
-
 }
