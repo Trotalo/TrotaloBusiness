@@ -84,11 +84,62 @@ class GPTController extends modRestController{
     return $messages;
   }
 
-  public function chat($messages) {
+  public function chat($messages, $gpt_function) {
     $chat = $this->open_ai->chat([
-      'model' => 'gpt-3.5-turbo',
+      'model' => 'gpt-3.5-turbo-0613',
       'messages' => $messages,
-      'temperature' => 0.5
+      'temperature' => 0.5,
+      'functions'=>
+        [
+          [
+            'name' => 'elements',
+            'description' => 'Procesar las preguntas',
+            'parameters' => [
+              'type' => 'object',
+              'properties' => [
+                'questions'=> [
+                  'type' => 'array',
+                  'items' => [
+                    'type' => 'string',
+                  ],
+                ]
+              ],
+              'description' => 'Array of strings',
+            ],
+          ],
+          [
+            'name' => 'finalPlan',
+            'description' => 'Procesar las preguntas',
+            'parameters' => [
+              'type' => 'object',
+              'properties' => [
+                'plans'=> [
+                  'type' => 'array',
+                  'items' => [
+                    'type' => 'object',
+                    'properties' => [
+                      'nombre' => [
+                        'type' => 'string',
+                      ],
+                      'indicadores' => [
+                        'type' => 'string',
+                      ],
+                      'actividades' => [
+                        'type' => 'array',
+                        'items' => [
+                          'type' => 'string',
+                        ]
+                      ],
+                    ],
+                  ],
+                ]
+              ],
+              'description' => 'Array of strings',
+            ],
+          ],
+        ],
+      'function_call' => !is_null($gpt_function) && !empty($gpt_function)  ? ['name' => $gpt_function] : "none",
+
     ]);
     return json_decode($chat, true);
 

@@ -23,6 +23,7 @@ class TrQuestions extends \trotalobusiness\Model\TrQuestions
             'ai_generated' => 0,
             'api_call' => 0,
             'question_type' => 0,
+            'gpt_function' => '',
         ),
         'fieldMeta' => 
         array (
@@ -79,6 +80,14 @@ class TrQuestions extends \trotalobusiness\Model\TrQuestions
                 'attributes' => 'unsigned',
                 'phptype' => 'integer',
                 'default' => 0,
+            ),
+            'gpt_function' => 
+            array (
+                'dbtype' => 'varchar',
+                'precision' => '255',
+                'phptype' => 'string',
+                'null' => false,
+                'default' => '',
             ),
         ),
     );

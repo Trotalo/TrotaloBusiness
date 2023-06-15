@@ -8,6 +8,8 @@
         <field key="ai_generated" dbtype="int" precision="1" attributes="unsigned" phptype="integer" default="0" />
         <field key="api_call" dbtype="int" precision="1" attributes="unsigned" phptype="integer" default="0" />
         <field key="question_type" dbtype="int" precision="1" attributes="unsigned" phptype="integer" default="0" />
+        <!-- This field is to tell which function should be "called" at GPTs side  -->
+        <field key="gpt_function" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
     </object>
 
     <object class="TrAnswers" table="trotalo_answers">

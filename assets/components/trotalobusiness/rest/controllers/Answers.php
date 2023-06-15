@@ -40,9 +40,9 @@ class TrotaloAnswers extends GPTController {
     $questionId = $properties['question_id'];
     $userId = $properties['user_id'];
     //we get the question
-    $object = $this->modx->getObject('trotalobusiness\Model\TrQuestions', ['id' => $questionId]);
+    $questionObject = $this->modx->getObject('trotalobusiness\Model\TrQuestions', ['id' => $questionId]);
     //we check if we need to call openAI api
-    if ($object->get("api_call") === 1) {
+    if ($questionObject->get("api_call") === 1) {
       //call openAI api and store content
       $properties = $this->getProperties();
       $this->object = $this->modx->newObject($this->classKey);
@@ -51,13 +51,21 @@ class TrotaloAnswers extends GPTController {
       //now we retrieve the conversation!
       $conversation = parent::getConversation($questionId, $userId);
       //after getting the conversation up to this point, we call openAI API
-      $AIResponse = parent::chat($conversation);
+      $AIResponse = parent::chat($conversation, $questionObject->get('gpt_function'));
       if (array_key_exists('error', $AIResponse)){
         //removes the answer if the connetion failed!
         $this->object->remove();
         throw new Exception('Errors accessing openAI API: ' . $AIResponse['error']['message'], 500);
       }
-      $this->object->set('ai_content', $AIResponse["choices"][0]["message"]["content"]);
+      $aiMsg = strlen($questionObject->get('gpt_function')) > 0
+                          ? $AIResponse['choices'][0]['message']['function_call']['arguments']
+                          : $AIResponse["choices"][0]["message"]["content"];
+
+
+      $this->object->set('ai_content', $aiMsg);
+
+
+
       $answerId = $this->object->save();
       //then we store the conversatin
       $convDB = $this->modx->newObject('trotalobusiness\Model\TrConversations');
@@ -74,7 +82,6 @@ class TrotaloAnswers extends GPTController {
     } else {
       parent::post();
     }
-
   }
 
   public function put()
@@ -96,5 +103,6 @@ class TrotaloAnswers extends GPTController {
 
     return $this->read($pk);
   }
+
 
 }

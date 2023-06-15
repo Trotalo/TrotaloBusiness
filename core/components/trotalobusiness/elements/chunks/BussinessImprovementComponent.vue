@@ -31,21 +31,22 @@ const user = ref({})
 const plans = ref(false)
 const oneStart = ref(1)
 const showFinal = ref(false)
+const userMail = ref("")
 const plansList = ref([{
   name: "Básico",
   stars: 1,
-  image: assetsRoute + 'images/basic.png',
-  includes: ["a", "b", "c"]
+  image: assetsRoute + 'images/basic.jpg',
+  includes: ["5 herramientas como las que acabas de probar para hacer crecer tu negocio"]
 },{
   name: "Avanzado",
   stars: 2,
-  image: assetsRoute + 'images/mid.png',
-  includes: ["a", "b", "c"]
+  image: assetsRoute + 'images/mid.jpg',
+  includes: ["2 herramientas personalizadas de acuerdo a tus necesidades", "acceso a informacion actualizaada", "100MB para cargar tus archivos"]
 },{
   name: "Experto",
   stars: 3,
-  image: assetsRoute + 'images/expert.png',
-  includes: ["a", "b", "c"]
+  image: assetsRoute + 'images/expert.jpg',
+  includes: ["Tu asistenete de negocio completamente ilimintado"]
 }])
 
 
@@ -266,9 +267,9 @@ onMounted(async() => {
         showFinal.value = true
       } else {
         $q.dialog({
-        title: 'Atención',
-        message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
-      })  
+          title: 'Atención',
+          message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
+        })  
       }
       
     }
@@ -279,7 +280,48 @@ onMounted(async() => {
     await loadQuestion(questionId.value, true)
     $q.loading.hide()
     return;
-    
+  }
+  
+  function askForPlan(){
+    $q.dialog({
+        title: 'Esperamos te halla gustado!',
+        message: 'Dejanos tu correo para avisarte tan pronto el servicio este al aire!',
+        prompt: {
+          model: userMail,
+          type: 'text' // optional
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        // console.log('>>>> OK, received', data)
+        saveUserMail()
+      })
+  }
+  
+  async function saveUserMail(){
+    if (userMail.value.length === 0) {
+      $q.dialog({
+          title: 'Completa la informacion',
+          message: 'Por favor ingresa un mail valido'
+        })  
+    } else {
+      try {
+        user.value.email = userMail.value
+        const response = await axios({
+        method: 'put',
+        url: window.location.protocol + "//" + window.location.hostname  + wsRoute + "?_rest=EarlyAccessUsr/" + user.value.id,
+        data: user.value,
+        }, axiosConfig)
+        
+        $q.dialog({
+          title: 'Excelente!',
+          message: 'Por favor ayudanos llenando esta encuesta para encontrar la mejor forma de apoyar a los medianosy pequeños empresarios! XXXLINK FORMSXXX'
+        })  
+        
+      } catch (error) {
+        processError(error)
+      }
+    }
   }
   
 </script>
@@ -319,7 +361,7 @@ onMounted(async() => {
       <q-card-section v-if="question.questions">
         <q-input
           v-if="questionType === 1"
-          v-for="(q, key) in options" :key="key"
+          v-for="(q, key) in options.questions" :key="key"
           v-model="answer[key]"
           label-slot
           type="textarea"
@@ -332,7 +374,7 @@ onMounted(async() => {
         </q-input>
         
         <q-btn v-if="questionType === 2"
-            v-for="(q, key) in options" :key="key"
+            v-for="(q, key) in options.questions" :key="key"
             v-model="answer[key]"
             color="primary"
             class="full-width q-mb-md" 
@@ -364,7 +406,7 @@ onMounted(async() => {
             />
             <q-tab-panels v-model="panel" animated class="shadow-2 rounded-borders">
               <q-tab-panel 
-                v-for="(action, key) in options" :key="key"
+                v-for="(action, key) in options.plans" :key="key"
                 :name="'s' + key">
                 <div class="text-h6">{{action.nombre}}</div>
                 {{action.indicadores}}
@@ -376,6 +418,17 @@ onMounted(async() => {
                   :label="task" 
                   class="full-width q-mb-md"
                   @click="answer[0] = task;plans = true"/>
+              </q-tab-panel>
+              <q-tab-panel 
+                name="s3">
+                <div class="text-h6">Adquiere un plan!</div>
+                <div class="text-h6">Para ver tus planes completos, y muchas herramientas mas!</div>
+                <q-btn  
+                  color="secondary" 
+                  label="Adquirir plan" 
+                  class="full-width q-mb-md"
+                  @click="answer[0] = task;plans = true"/>
+                
               </q-tab-panel>
             </q-tab-panels>
           </div>
@@ -392,7 +445,9 @@ onMounted(async() => {
       <div class="q-pa-md">
         <q-btn-group spread>
           <q-btn color="secondary" @click="resetForm()" icon="visibility">Volver a empezar</q-btn>  
-          <q-btn color="primary" @click="saveAndContinue()">Siguiente</q-btn>
+          <q-btn 
+            v-if="questionType !== 4 && questionType !== 2 && questionType !== 3"
+            color="primary" @click="saveAndContinue()">Siguiente</q-btn>
         </q-btn-group>
       </div>
     </q-card>
@@ -419,7 +474,7 @@ onMounted(async() => {
         </q-card-section>
         
         <div class="row">
-          <div class="col" v-for="(plan, key) in plansList" :key="key">
+          <div class="col-xs-12 col-md-4" v-for="(plan, key) in plansList" :key="key">
             <q-card class="my-card">
               <q-img :src="plan.image" />
               <q-card-section class="text-center">
@@ -446,7 +501,7 @@ onMounted(async() => {
               <q-separator />
       
               <q-card-actions align="center">
-                <q-btn color="primary" label="Solicitar!" />
+                <q-btn color="primary" label="Solicitar!" @click="askForPlan()"/>
               </q-card-actions>
             </q-card>
           </div>
