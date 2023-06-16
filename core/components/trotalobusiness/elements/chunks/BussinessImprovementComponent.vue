@@ -174,7 +174,7 @@ onMounted(async() => {
   
   async function resetForm(){
     $q.dialog({
-        title: 'Estás seguro?',
+        title: '¿Estás seguro?',
         message: 'Ésta operación no se puede reversar, por favor asegúrate de guardar toda la información necesaria' 
       }).onOk(async() => {
         // console.log('OK')
@@ -233,7 +233,7 @@ onMounted(async() => {
     } else {
       $q.dialog({
         title: 'Bienvenid@ ' + response.data.object.name,
-        message: 'Tomemonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente'
+        message: 'Tomémonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente'
       })
       logged.value = true
       user.value = response.data.object 
@@ -266,7 +266,7 @@ onMounted(async() => {
       } else {
         $q.dialog({
           title: 'Atención',
-          message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan!'
+          message: 'Lo sentimos, ya usaste tu prueba gratis, por favor adquiere un plan'
         })  
       }
       
@@ -283,8 +283,8 @@ onMounted(async() => {
   
   function askForPlan(){
     $q.dialog({
-        title: 'Esperamos te halla gustado!',
-        message: 'Dejanos tu correo para avisarte tan pronto el servicio este al aire!',
+        title: '¡Esperamos te haya gustado!',
+        message: '¡Déjanos tu correo para avisarte tan pronto el servicio esté al aire!',
         prompt: {
           model: userMail,
           type: 'text' // optional
@@ -301,7 +301,7 @@ onMounted(async() => {
     if (userMail.value.length === 0) {
       $q.dialog({
           title: 'Completa la informacion',
-          message: 'Por favor ingresa un mail valido'
+          message: 'Por favor ingresa un mail válido'
         })  
     } else {
       try {
@@ -313,8 +313,8 @@ onMounted(async() => {
         }, axiosConfig)
         
         $q.dialog({
-          title: 'Excelente!',
-          message: 'Por favor ayudanos llenando esta encuesta para encontrar la mejor forma de apoyar a los medianosy pequeños empresarios! XXXLINK FORMSXXX'
+          title: '¡Excelente!',
+          message: 'Por favor ayúdanos llenando ésta encuesta para encontrar la mejor forma de apoyar a los medianos y pequeños empresarios XXXLINK FORMSXXX'
         })  
         
       } catch (error) {
@@ -333,15 +333,15 @@ onMounted(async() => {
       <q-card-section>
         <div class="text-h6">Bienvenido a Trotalo Coach</div>
         <br>
-        <div class="text-subtitle2">El Coach que necesitas para alcanzar los objetivos de tu negocio!</div>
+        <div class="text-subtitle2">¡El Coach que necesitas para alcanzar los objetivos de tu negocio!</div>
         <br>
         <div class="text-subtitle2">Libera todo el poder de tus ideas y has crecer tu negocio con nuestras herramientas de Inteligencia Artificial</div>
         <br>
-        <div class="text-subtitle2">Obten asesoría experta, planes concretos, y estrategias personalizasa para lleavr tu negocio al siguiente nivel!</div>
+        <div class="text-subtitle2">Obtén asesoría experta, planes concretos, y estrategias personalizasa para lleavr tu negocio al siguiente nivel</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <div class="text-subtitle2">Ingresa tu código de invitación!</div>
+        <div class="text-subtitle2">Ingresa tu código de invitación</div>
         <q-input v-model="promoCode" label="Código validación" />
       </q-card-section>
       <div class="q-pa-md">
@@ -420,8 +420,8 @@ onMounted(async() => {
               </q-tab-panel>
               <q-tab-panel 
                 name="s3">
-                <div class="text-h6">Adquiere un plan!</div>
-                <div class="text-h6">Para ver tus planes completos, y muchas herramientas mas!</div>
+                <div class="text-h6">¡Adquiere un plan!</div>
+                <div class="text-h6">Para ver tus planes completos, y muchas herramientas más</div>
                 <q-btn  
                   color="secondary" 
                   label="Adquirir plan" 
@@ -469,7 +469,7 @@ onMounted(async() => {
           
           <div class="text-h6 text-center">o</div>
           
-          <div class="text-h6 text-center">Selecciona uno de nuestros planes para desbloquear todo el poder!</div>
+          <div class="text-h6 text-center">¡Selecciona uno de nuestros planes para desbloquear todo el poder!</div>
         </q-card-section>
         
         <div class="row">
@@ -523,7 +523,7 @@ onMounted(async() => {
           </div>-->
           
           <div class="text-h2 text-center">Tu plan!</div>
-          <div class="q-mt-md q-mb-md text-h5 text-center">Para ver los planes detallados de todas tus actividades, y acceder a muchas mas herramientas, selecciona un plan de subscripcion!</div>
+          <div class="q-mt-md q-mb-md text-h5 text-center">Para ver los planes detallados de todas tus actividades, y acceder a muchas más herramientas, selecciona un plan de subscripción</div>
           
           <p class="final-answer">{{finalAnswer}}</p>
         </q-card-section>
