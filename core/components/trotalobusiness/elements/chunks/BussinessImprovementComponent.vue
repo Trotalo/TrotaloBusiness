@@ -233,7 +233,8 @@ onMounted(async() => {
     } else {
       $q.dialog({
         title: 'Bienvenid@ ' + response.data.object.name,
-        message: 'Tomémonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente'
+        message: "<div class=\"text-h6\">Entre más clara y completa sea la información que ingresas, mejores serán las sugerencias</div><p> Tomémonos unos minutos para trabajar en algún reto que tengas en tu trabajo o negocio actualmente</p>",
+        html: true
       })
       logged.value = true
       user.value = response.data.object 
@@ -314,7 +315,8 @@ onMounted(async() => {
         
         $q.dialog({
           title: '¡Excelente!',
-          message: 'Por favor ayúdanos llenando ésta encuesta para encontrar la mejor forma de apoyar a los medianos y pequeños empresarios XXXLINK FORMSXXX'
+          message: 'Por favor ayúdanos <a href="https://forms.gle/hid3FEkAaSVFv7b88">llenando ésta encuesta</a> para encontrar la mejor forma de apoyar a los medianos y pequeños empresarios',
+          html: true
         })  
         
       } catch (error) {

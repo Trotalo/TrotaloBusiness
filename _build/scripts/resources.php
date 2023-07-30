@@ -51,8 +51,8 @@ $content = <<<HTML
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coach</title>
-    <script type="module" crossorigin src="/assets/components/trotalobusiness/7/js/index-3076938a.js"></script>
-    <link rel="stylesheet" href="/assets/components/trotalobusiness/7/css/index-a4473fd9.css">
+    <script type="module" crossorigin src="/assets/components/trotalobusiness/7/js/index-36ba921f.js"></script>
+    <link rel="stylesheet" href="/assets/components/trotalobusiness/7/css/index-f71c81a8.css">
   </head>
   <body>
     <div id="q-app" style="min-height: 60rem;"></div>
@@ -85,7 +85,7 @@ $json = <<<JSON
 		"ai_generated" : 0,
 		"api_call" : 1,
 		"question_type" : 1,
-		"gpt_function" : "elements"
+		"gpt_function" : ""
 	},
 	{
 		"id" : 3,
@@ -107,7 +107,7 @@ $json = <<<JSON
 		"ai_generated" : 0,
 		"api_call" : 1,
 		"question_type" : 1,
-		"gpt_function" : "elements"
+		"gpt_function" : ""
 	},
 	{
 		"id" : 6,
@@ -118,7 +118,7 @@ $json = <<<JSON
 		"ai_generated" : 1,
 		"api_call" : 1,
 		"question_type" : 2,
-		"gpt_function" : "finalPlan"
+		"gpt_function" : ""
 	},
 	{
 		"id" : 7,

@@ -19,7 +19,7 @@
 		"ai_generated" : 0,
 		"api_call" : 1,
 		"question_type" : 1,
-		"gpt_function" : "elements"
+		"gpt_function" : ""
 	},
 	{
 		"id" : 3,
@@ -41,7 +41,7 @@
 		"ai_generated" : 0,
 		"api_call" : 1,
 		"question_type" : 1,
-		"gpt_function" : "elements"
+		"gpt_function" : ""
 	},
 	{
 		"id" : 6,
@@ -52,7 +52,7 @@
 		"ai_generated" : 1,
 		"api_call" : 1,
 		"question_type" : 2,
-		"gpt_function" : "finalPlan"
+		"gpt_function" : ""
 	},
 	{
 		"id" : 7,
