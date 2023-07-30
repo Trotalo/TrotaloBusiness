@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model package="trotalobusiness\Model\" baseClass="xPDO\Om\xPDOSimpleObject" platform="mysql" defaultEngine="InnoDB" version="3.0">
-    <object class="TrQuestions" table="trotalo_questions">
+<model package="tcoachbusiness\Model\" baseClass="xPDO\Om\xPDOSimpleObject" platform="mysql" defaultEngine="InnoDB" version="3.0">
+
+    <object class="TcQuGroups" table="tcoach_question_groups">
+        <field key="name" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="description" dbtype="TEXT" phptype="string" null="false" default="" />
+    </object>
+
+    <object class="TcQuGroupFlows" table="tcoach_question_groups">
+        <field key="question_groups_id" dbtype="int" precision="11" attributes="unsigned" phptype="integer" default="0" />
+        <field key="question_flows_id" dbtype="int" precision="11" attributes="unsigned" phptype="integer" default="0" />
+    </object>
+
+    <object class="TcQuestionFlows" table="tcoach_question_flows">
+        <field key="name" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="description" dbtype="TEXT" phptype="string" null="false" default="" />
+    </object>
+
+    <object class="TcQuestions" table="tcoach_questions">
+        <field key="question_flow_id" dbtype="int" precision="11" attributes="unsigned" phptype="integer" default="0" />
         <field key="parent_id" dbtype="int" precision="11" attributes="unsigned" phptype="integer" default="0" />
         <field key="question" dbtype="TEXT" phptype="string" null="false" default="" />
         <field key="prompt" dbtype="TEXT" phptype="string" null="false" default="" />
@@ -8,9 +25,11 @@
         <field key="ai_generated" dbtype="int" precision="1" attributes="unsigned" phptype="integer" default="0" />
         <field key="api_call" dbtype="int" precision="1" attributes="unsigned" phptype="integer" default="0" />
         <field key="question_type" dbtype="int" precision="1" attributes="unsigned" phptype="integer" default="0" />
+        <!-- This field is to tell which function should be "called" at GPTs side  -->
+        <field key="gpt_function" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
     </object>
 
-    <object class="TrAnswers" table="trotalo_answers">
+    <object class="TcAnswers" table="tcoach_answers">
         <field key="question_id" dbtype="int" precision="11" attributes="unsigned" phptype="integer" default="0" />
         <field key="role" dbtype="varchar" precision="20" phptype="string" null="false" default="" />
         <field key="content" dbtype="TEXT" phptype="string" null="false" default="" />
@@ -19,8 +38,17 @@
         <field key="user_id" dbtype="int" precision="11" attributes="unsigned" phptype="integer" default="0" />
     </object>
 
-    <object class="TrConversations" table="trotalo_conversations">
+    <object class="TcConversations" table="tcoach_conversations">
         <field key="answer_id" dbtype="int" precision="11" attributes="unsigned" phptype="integer" default="0" />
+        <field key="user_id" dbtype="int" precision="11" attributes="unsigned" phptype="integer" default="0" />
         <field key="conversation" dbtype="TEXT" phptype="string" null="false" default="" />
+    </object>
+
+    <object class="TcEarlyAccessUsr" table="tcoach_early_access_user">
+        <field key="invitation_code" dbtype="varchar" precision="200" phptype="string" null="false" default="" />
+        <field key="name" dbtype="varchar" precision="200" phptype="string" null="false" default="" />
+        <field key="phone_number" dbtype="varchar" precision="20" phptype="string" null="false" default="" />
+        <field key="email" dbtype="varchar" precision="400" phptype="string" null="false" default="" />
+        <field key="generated" dbtype="int" precision="1" attributes="unsigned" phptype="integer" default="0" />
     </object>
 </model>

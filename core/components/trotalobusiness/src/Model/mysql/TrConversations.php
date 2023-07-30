@@ -17,11 +17,20 @@ class TrConversations extends \trotalobusiness\Model\TrConversations
         'fields' => 
         array (
             'answer_id' => 0,
+            'user_id' => 0,
             'conversation' => '',
         ),
         'fieldMeta' => 
         array (
             'answer_id' => 
+            array (
+                'dbtype' => 'int',
+                'precision' => '11',
+                'attributes' => 'unsigned',
+                'phptype' => 'integer',
+                'default' => 0,
+            ),
+            'user_id' => 
             array (
                 'dbtype' => 'int',
                 'precision' => '11',

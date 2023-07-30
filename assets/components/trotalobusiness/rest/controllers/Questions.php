@@ -36,11 +36,12 @@ class TrotaloQuestions extends GPTController {
     $this->modxPrefix = $isMODX3 ? 'MODX\Revolution\\' : '';
   }
 
-  private function getAiGenerated($object) {
+  private function getAiGenerated($object, $userId) {
     if ($object->get('parent_id') === 0) {
       $object->set('questions', $object->get('options'));
     } else {
-      $prevAnswer = $this->modx->getObject($this->answersPrefix, ['question_id' => $object->get('parent_id')]);
+      $prevAnswer = $this->modx->getObject($this->answersPrefix, ['question_id' => $object->get('parent_id'),
+                                                                  'user_id' => $userId]);
       if (is_null($prevAnswer)) {
         throw new Exception('Needed answer not found, please contact support');
       }
@@ -57,18 +58,52 @@ class TrotaloQuestions extends GPTController {
     return $this->success('', $objectArray);
   }
 
-  public function get()
+  public function post()
   {
     $pk = $this->getProperty($this->primaryKeyField);
+    $userId = $this->getProperty('userId');
     if(!strpos($pk, '?')) {
       //If its a simple query
       if (empty($pk)) {
-        return $this->getList();
+        //return $this->getList();
+        return $this->failure('Cant get all the messsages, oepration nor permited', null, 500);
       }
+      //first we get the question number where the user is
+      $query = $this->modx->query("
+        SELECT *
+        FROM modx_trotalo_answers AS answers
+        JOIN modx_trotalo_questions AS questions ON answers.question_id = questions.id
+        WHERE answers.user_id = $userId
+        AND questions.question_type <> 4
+        ORDER BY answers.timestamp DESC
+        LIMIT 1;      
+      ");
+      if (is_null($query)) {
+        //throw new Exception("NO global componments");
+        //TODO this was changed du the fact that there cannot be global and no need of error
+        return $this->failure('Cant find user! please login again', null, 550);
+      }
+
+      $list = [];
+      while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+        $list[] = $row;
+      }
+      if(!empty($list)) {
+        $last_question_id = $list[0]["question_id"];
+        //and we need to get the next question
+        $last_question = $this->modx->getObject($this->classKey, ['parent_id'=> $last_question_id]);
+        if (is_null($last_question)) {
+          return $this->failure('MIssconfiguration, no next question found', null, 550);
+        }
+        $pk = $last_question->get('id');
+
+      }
+
+      //we
       $object = $this->modx->getObject($this->classKey, ['id' => $pk]);
       if ($object->get('ai_generated') === 1) {
         //We get the AI answer for the parent's question
-        return $this->getAiGenerated($object);
+        return $this->getAiGenerated($object, $userId);
 
       } else {
         return $this->read($pk);
@@ -77,6 +112,7 @@ class TrotaloQuestions extends GPTController {
     } else {
       //Get the id
       $operation = substr($pk,strpos($pk, '?') + 1);
+      //TODO we ignore the provided PK and look for the
       $pk = substr($pk,0, strpos($pk, '?'));
       if (strcmp(strtolower($operation), 'next') === 0) {
         $object = $this->modx->getObject($this->classKey, ['parent_id' => $pk]);
@@ -87,7 +123,7 @@ class TrotaloQuestions extends GPTController {
         }
         if ($object->get('ai_generated') === 1) {
           //We get the AI answer for the parent's question
-          return $this->getAiGenerated($object);
+          return $this->getAiGenerated($object, $userId);
 
         } else {
           $objectArray = $object->toArray();
@@ -103,7 +139,9 @@ class TrotaloQuestions extends GPTController {
       } elseif (strcmp(strtolower($operation), 'all') === 0) {
         $conversation =  parent::getConversation($pk);
         return $this->collection($conversation, count($conversation));
-
+      } elseif (strcmp(strtolower($operation), 'curr_question') === 0) {
+        $conversation =  parent::getConversation($pk);
+        return $this->collection($conversation, count($conversation));
       }
 
 

@@ -1,0 +1,26 @@
+[
+	{
+		"id" : 1,
+		"invitation_code" : "3FQ70",
+		"name" : "Bear",
+		"phone_number" : "3143526618",
+		"email" : "adsf@gmail.com",
+		"generated" : 0
+	},
+	{
+		"id" : 2,
+		"invitation_code" : "1QNRW",
+		"name" : "Test2",
+		"phone_number" : "4564654654",
+		"email" : "adsfas@asdf.com",
+		"generated" : 0
+	},
+	{
+		"id" : 3,
+		"invitation_code" : "7JK3L9",
+		"name" : "Camilo",
+		"phone_number" : "3204827710",
+		"email" : "asdf@asdf.com",
+		"generated" : 0
+	}
+]

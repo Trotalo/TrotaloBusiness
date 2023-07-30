@@ -14,11 +14,10 @@ class GPTController extends modRestController{
     parent::__construct($modx, $request, $config);
     $this->open_ai_key = getenv('OPENAI_API_KEY');
     $this->open_ai = new OpenAi($this->open_ai_key);
-
   }
 
 
-  public function getConversation($questionId): array {
+  public function getConversation($questionId, $userId): array {
     $query = $this->modx->query("
       WITH RECURSIVE category_path (id, question, prompt, parent_id) AS
       (
@@ -34,6 +33,7 @@ class GPTController extends modRestController{
         FROM category_path cat
         left join modx_trotalo_answers answers ON
           cat.id = answers.question_id
+          and answers.user_id = $userId
         order by id;
       ");
     if (is_null($query)) {
@@ -42,7 +42,7 @@ class GPTController extends modRestController{
       return '';
     }
 
-    $list = [];
+        $list = [];
     while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
       $list[] = $row;
     }
@@ -84,11 +84,62 @@ class GPTController extends modRestController{
     return $messages;
   }
 
-  public function chat($messages) {
+  public function chat($messages, $gpt_function) {
     $chat = $this->open_ai->chat([
-      'model' => 'gpt-3.5-turbo',
+      'model' => 'gpt-3.5-turbo-0613',
       'messages' => $messages,
-      'temperature' => 0.4
+      'temperature' => 0.5,
+      'functions'=>
+        [
+          [
+            'name' => 'elements',
+            'description' => 'Procesar las preguntas',
+            'parameters' => [
+              'type' => 'object',
+              'properties' => [
+                'elements'=> [
+                  'type' => 'array',
+                  'items' => [
+                    'type' => 'string',
+                  ],
+                ]
+              ],
+              'description' => 'Array of strings',
+            ],
+          ],
+          [
+            'name' => 'finalPlan',
+            'description' => 'Procesar las preguntas',
+            'parameters' => [
+              'type' => 'object',
+              'properties' => [
+                'plans'=> [
+                  'type' => 'array',
+                  'items' => [
+                    'type' => 'object',
+                    'properties' => [
+                      'nombre' => [
+                        'type' => 'string',
+                      ],
+                      'indicadores' => [
+                        'type' => 'string',
+                      ],
+                      'actividades' => [
+                        'type' => 'array',
+                        'items' => [
+                          'type' => 'string',
+                        ]
+                      ],
+                    ],
+                  ],
+                ]
+              ],
+              'description' => 'Array of strings',
+            ],
+          ],
+        ],
+      'function_call' => !is_null($gpt_function) && !empty($gpt_function)  ? ['name' => $gpt_function] : "none",
+
     ]);
     return json_decode($chat, true);
 
